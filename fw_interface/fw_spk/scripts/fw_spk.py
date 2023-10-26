@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import rospy
 import rospkg
-#import sys, select, termios, tty
+import sys, select, termios, tty
 from playsound import playsound
 from geometry_msgs.msg import PoseStamped
 from move_base_msgs.msg import MoveBaseAction, MoveBaseActionGoal, MoveBaseActionResult

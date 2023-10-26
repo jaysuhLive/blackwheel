@@ -1,0 +1,4 @@
+<launch>
+  <rosparam file="$(find fw_ttc)/config/fw_ttc_params.yaml" command="load"/>
+  <node name="fw_ttc_node" pkg="fw_ttc" type="fw_ttc_node" output="screen" respawn="false"/>
+</launch>

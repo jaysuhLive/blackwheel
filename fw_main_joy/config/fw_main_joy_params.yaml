@@ -1,0 +1,8 @@
+fw_main_joy_node:
+  device_name: "/dev/MAINJOY"
+  x_scale: 1.0
+  y_scale: 1.0
+  frequency: 50.0
+  baudrate: 38400
+  cmd_vel_topic: "cmd_vel"
+  uart_debugmode: true

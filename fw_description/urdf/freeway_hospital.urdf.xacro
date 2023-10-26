@@ -1,0 +1,558 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="freeway_hospital" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:arg name="use_nominal_extrinsics" default="true"/>
+  <xacro:include filename="$(find fw_rev_04_description)/urdf/_d455.urdf.xacro" />
+  <xacro:include filename="$(find fw_rev_04_description)/urdf/materials.xacro"/>
+
+  <link name="base_footprint"/>
+  
+  <joint name="base_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link" />
+    <origin xyz="0.0 0.0 0.124" rpy="0 0 0"/> 
+  </joint>
+
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.094811 0.0057666 0.32212"
+        rpy="0 0 0" />
+      <mass
+        value="19.286" />
+      <inertia
+        ixx="0.23665"
+        ixy="-0.0011917"
+        ixz="0.067598"
+        iyy="0.54713"
+        iyz="-4.7169E-05"
+        izz="0.60961" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://fw_rev_04_description/meshes/freeway_hospital/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://fw_rev_04_description/meshes/freeway_hospital/base_link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="wheel_right_link">
+    <inertial>
+      <origin
+        xyz="8.16500200784276E-09 -3.19020788009869E-06 -0.000105492950718267"
+        rpy="0 0 0" />
+      <mass
+        value="3.36709410851153" />
+      <inertia
+        ixx="0.0160101381098047"
+        ixy="-3.62943348744418E-09"
+        ixz="-9.24081285545405E-10"
+        iyy="0.0160102776926814"
+        iyz="-1.45256404455782E-07"
+        izz="0.028640236512686" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://fw_rev_04_description/meshes/freeway_hospital/wheel_right_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://fw_rev_04_description/meshes/freeway_hospital/wheel_right_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="wheel_right_joint"
+    type="fixed">
+    <origin
+      xyz="0 -0.2585 0"
+      rpy="1.5708 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="wheel_right_link" />
+    <!-- <axis
+      xyz="0 0 1" />
+    <limit
+      effort="100"
+      velocity="100" /> -->
+  </joint>
+  <link
+    name="wheel_left_link">
+    <inertial>
+      <origin
+        xyz="2.37318324002589E-05 -1.00111587965235E-05 -0.000212473617092424"
+        rpy="0 0 0" />
+      <mass
+        value="3.36803146017167" />
+      <inertia
+        ixx="0.016010175042694"
+        ixy="-3.64563047590658E-09"
+        ixz="-8.47670668630322E-10"
+        iyy="0.0160102885890312"
+        iyz="1.44977587474539E-07"
+        izz="0.0286402734095892" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://fw_rev_04_description/meshes/freeway_hospital/wheel_left_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://fw_rev_04_description/meshes/freeway_hospital/wheel_left_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="wheel_left_joint"
+    type="fixed">
+    <origin
+      xyz="0 0.2585 0"
+      rpy="-1.5708 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="wheel_left_link" />
+   <!--  <axis
+      xyz="0 0 1" />
+    <limit
+      effort="100"
+      velocity="100" /> -->
+  </joint>
+  <link
+    name="base_scan_left_link">
+    <inertial>
+      <origin
+        xyz="-0.256949021418697 -0.442094214195927 -0.026703591794659"
+        rpy="0 0 0" />
+      <mass
+        value="0.0436321205221007" />
+      <inertia
+        ixx="2.36920169456592E-05"
+        ixy="-4.19484378602162E-08"
+        ixz="6.05888947695609E-08"
+        iyy="2.39392703260355E-05"
+        iyz="-6.09899582593688E-09"
+        izz="3.42581002971118E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://fw_rev_04_description/meshes/freeway_hospital/base_scan_left_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://fw_rev_04_description/meshes/freeway_hospital/base_scan_left_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint
+    name="base_scan_left_joint"
+    type="fixed">
+    <origin
+      xyz="0.78202 0.25628 0.03044"
+      rpy="0 0 0.5236" />
+    <parent
+      link="base_link" />
+    <child
+      link="base_scan_left_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="base_scan_link">
+    <inertial>
+      <origin
+        xyz="-0.256949021418697 -0.442094214195927 -0.026703591794659"
+        rpy="0 0 0" />
+      <mass
+        value="0.0436321205221007" />
+      <inertia
+        ixx="2.36920169456592E-05"
+        ixy="-4.19484378602162E-08"
+        ixz="6.05888947695609E-08"
+        iyy="2.39392703260355E-05"
+        iyz="-6.09899582593688E-09"
+        izz="3.42581002971118E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 3.14" />
+      <geometry>
+        <mesh
+          filename="package://fw_rev_04_description/meshes/freeway_hospital/base_scan_link.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://fw_rev_04_description/meshes/freeway_hospital/base_scan_link.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="base_scan_joint"
+    type="fixed">
+    <origin
+      xyz="0.78202 0.0 0.03044"
+      rpy="0 0 0.0" />
+    <parent
+      link="base_link" />
+    <child
+      link="base_scan_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="base_scan_right_link">
+    <inertial>
+      <origin
+        xyz="-0.25750669289854 0.442416087160246 -0.0267035915847231"
+        rpy="0 0 0" />
+      <mass
+        value="0.0436321194421134" />
+      <inertia
+        ixx="2.3841128700062E-05"
+        ixy="1.28038195183149E-07"
+        ixz="-2.5012584170839E-08"
+        iyy="2.37901585439961E-05"
+        iyz="5.5520995716856E-08"
+        izz="3.425810034874E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://fw_rev_04_description/meshes/freeway_hospital/base_scan_right_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://fw_rev_04_description/meshes/freeway_hospital/base_scan_right_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="base_scan_right_joint"
+    type="fixed">
+    <origin
+      xyz="0.78202 -0.25628 0.03044"
+      rpy="0 0 -0.523598775598497" />
+    <parent
+      link="base_link" />
+    <child
+      link="base_scan_right_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="camera_right_link">
+    <inertial>
+      <origin
+        xyz="0.00288954457310986 0.450058640405407 0.013492759025447"
+        rpy="0 0 0" />
+      <mass
+        value="0.0548681455917021" />
+      <inertia
+        ixx="6.9180046964058E-05"
+        ixy="-9.89097535075896E-09"
+        ixz="-2.90590173536331E-08"
+        iyy="4.15070847692372E-06"
+        iyz="3.3392279220528E-09"
+        izz="6.60232177989691E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://fw_rev_04_description/meshes/freeway_hospital/camera_right_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://fw_rev_04_description/meshes/freeway_hospital/camera_right_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="camera_right_joint"
+    type="fixed">
+    <origin
+      xyz="0.38783 -0.225 0.18109"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="camera_right_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="camera_left_link">
+    <inertial>
+      <origin
+        xyz="0.00288952343257765 -0.450059072339157 0.0134928533819542"
+        rpy="0 0 0" />
+      <mass
+        value="0.0548684722361943" />
+      <inertia
+        ixx="6.91783116072484E-05"
+        ixy="1.00462887861135E-08"
+        ixz="-2.91528730111389E-08"
+        iyy="4.1490051221238E-06"
+        iyz="-3.05126858079499E-09"
+        izz="6.60231905620916E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://fw_rev_04_description/meshes/freeway_hospital/camera_left_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://fw_rev_04_description/meshes/freeway_hospital/camera_left_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="camera_left_joint"
+    type="fixed">
+    <origin
+      xyz="0.387834591477574 0.225 0.18109"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="camera_left_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <xacro:sensor_d455 parent="base_link" name="d455_L" use_nominal_extrinsics="$(arg use_nominal_extrinsics)">
+    <origin xyz="0.74384 0.225 0.13249" rpy="0 -0.349066 0"/>
+  </xacro:sensor_d455>
+
+  <xacro:sensor_d455 parent="base_link" name="d455_R" use_nominal_extrinsics="$(arg use_nominal_extrinsics)">
+    <origin xyz="0.74384 -0.225 0.13249" rpy="0 -0.349066 0"/>
+  </xacro:sensor_d455>
+
+  <link
+    name="caster_left_link">
+    <inertial>
+      <origin
+        xyz="6.98443827551465E-07 2.1652017669245E-07 0.0203076752811115"
+        rpy="0 0 0" />
+      <mass
+        value="2.02442609623838" />
+      <inertia
+        ixx="0.00814631630778673"
+        ixy="-1.18732805242371E-07"
+        ixz="1.66271492598158E-09"
+        iyy="0.00814586849784518"
+        iyz="8.52947814251411E-11"
+        izz="0.0153250577058625" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://fw_rev_04_description/meshes/freeway_hospital/caster_left_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://fw_rev_04_description/meshes/freeway_hospital/caster_left_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="caster_left_joint"
+    type="fixed">
+    <origin
+      xyz="0.60968 0.2135 0.00090021"
+      rpy="-1.5708 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="caster_left_link" />
+    <!-- <axis
+      xyz="0 0 1" />
+    <limit
+      effort="100"
+      velocity="100" /> -->
+  </joint>
+  <link
+    name="caster_right_link">
+    <inertial>
+      <origin
+        xyz="6.97195493004621E-07 2.15986786416059E-07 0.0203076763379647"
+        rpy="0 0 0" />
+      <mass
+        value="2.02442610092258" />
+      <inertia
+        ixx="0.00814631639134827"
+        ixy="-1.18675444341151E-07"
+        ixz="1.55830964827558E-09"
+        iyy="0.00814586855319694"
+        iyz="5.57008697817412E-11"
+        izz="0.0153250580434465" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://fw_rev_04_description/meshes/freeway_hospital/caster_right_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://fw_rev_04_description/meshes/freeway_hospital/caster_right_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="caster_right_joint"
+    type="fixed">
+    <origin
+      xyz="0.60968 -0.2135 0.00090021"
+      rpy="1.5708 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="caster_right_link" />
+    <!-- <axis
+      xyz="0 0 1" />
+    <limit
+      effort="100"
+      velocity="100" /> -->
+  </joint>
+</robot>

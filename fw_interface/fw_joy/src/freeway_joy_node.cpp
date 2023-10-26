@@ -1,13 +1,15 @@
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <std_msgs/Empty.h>
+#include <std_msgs/Bool.h>
 #include <nav_msgs/Path.h>
-#include <sensor_msgs/LaserScan.h>
 #include <math.h>
 #include <sstream>
 #include "geometry_msgs/Twist.h"
 #include "actionlib_msgs/GoalStatusArray.h"
+#include "freeway_msgs/DistanceTimeCalculator.h"
 #include "freeway_joyfw/stm_fw_msg.h"
+#include "freeway_joyfw/stm_fw_sonar_msg.h"
 #include "freeway_joyfw/stm_am_msg.h"
 #include "freeway_joyfw/stm_fw_srv.h"
 
@@ -18,114 +20,50 @@ class Freeway_Joy_Fw
   public:
     Freeway_Joy_Fw(ros::NodeHandle *n)
     {
-      cmd_pub = n->advertise<geometry_msgs::Twist>("cmd_vel", 10);
+      cmd_pub = n->advertise<geometry_msgs::Twist>("/cmd_vel/joy", 10);
+      cmd_emer_pub = n->advertise<geometry_msgs::Twist>("/cmd_vel/emer", 10);
       am_mode_pub = n->advertise<freeway_joyfw::stm_am_msg>("freeway/am_status", 10);
       move_base_flex_cancel_pub = n->advertise<actionlib_msgs::GoalID>("move_base_flex/move_base/cancel", 10);
-      diag_sub = n->subscribe("freeway/diagnostics", 1000, &Freeway_Joy_Fw::get_diagnostics_cb, this);
-      input_scan_sub = n->subscribe("/scan_rp_filtered", 50, &Freeway_Joy_Fw::update, this);
-      signal = 0;
-      signal2 = 0;
-      reset = 0;
+      range_right_pub = n->advertise<sensor_msgs::Range>("/freeway/ultrasound/right", 10);
+      range_left_pub = n->advertise<sensor_msgs::Range>("/freeway/ultrasound/left", 10);
+      diag_sub = n->subscribe("freeway/diagnostics", 10, &Freeway_Joy_Fw::get_diagnostics_cb, this);
+      sonar_sub = n->subscribe("/freeway/ultrasound", 10, &Freeway_Joy_Fw::fw_sonar_cb, this);
+      front_obstacle_sub = n->subscribe("/freeway/front_obstacle", 10, &Freeway_Joy_Fw::front_obstacle_cb, this);
+      cmd_vel_ui_sub = n->subscribe("/cmd_vel/ui", 10, &Freeway_Joy_Fw::cmd_vel_ui_cb, this);
+      dt_sub = n->subscribe("/freeway/distancetimecalculator", 10, &Freeway_Joy_Fw::dt_sub_cb, this);
+      diagnostics_time;
+      stm_msg;
+      dt_msg;
+      front_obstacle_detected = false;
     }
 
     bool am_mode_cb(freeway_joyfw::stm_fw_srv::Request &req, freeway_joyfw::stm_fw_srv::Response &res);
 
-    void update(const sensor_msgs::LaserScan& input_scan)
+    void front_obstacle_cb(const std_msgs::Bool::ConstPtr& front_obstacle_msg)
     {
-      //reset = signal;
+      front_obstacle_detected = front_obstacle_msg->data;
+    }
 
-      if(RP_LIDAR_S2) {
-        
-          if (!input_scan.ranges.empty()) {
-                float res_per_deg = (int)input_scan.ranges.size() / (float)360.0;
-                float las_mid_ran = res_per_deg * (float)180.0;
-                float deg_15 = floor(res_per_deg * (float)15.0);
-                float* ran_arr = new float[8*int(floor(deg_15))]();
-
-                for (unsigned int i = 0; i < 4*int(floor(deg_15)); i++) {
-                  if(input_scan.ranges[i] < 0.3) {
-                    signal++;
-                  }
-                  ran_arr[i]=input_scan.ranges[i];
-                }
-
-                for (unsigned int i = input_scan.ranges.size()-1 - 4*int(floor(deg_15)); i < input_scan.ranges.size()-1; i++) {
-                  if(input_scan.ranges[i] < 0.3) {
-                    signal++;
-                  }
-                  if (signal >= 30) {
-                    signal = 30;
-                    //ROS_INFO("Emergency_Safety_LiDAR Detection!!!!!!!!!!!!!!!!!!!!");
-                  }
-                  ran_arr[(i+(4*int(floor(deg_15))))-(input_scan.ranges.size()-1 - 4*int(floor(deg_15)))]=input_scan.ranges[i];
-                }      
-                for (unsigned int i = 0; i < 8*int(floor(deg_15))-1; i++) {
-                  if (ran_arr[i] >= 0.5) {
-                    signal2++;
-                  }
-                }
-                if (signal2 >= 8*int(floor(deg_15))-2) {
-                  signal2 =0;
-                  signal = 0;
-                }
-                else if (signal2 < 8*int(floor(deg_15))-2) signal2 = 0;
-
-                delete [] ran_arr;
-             }
-      }
-      
-      else if(!RP_LIDAR_S2) {
-        if (!input_scan.ranges.empty()) {
-            float res_per_deg = (int)input_scan.ranges.size() / (float)360.0;
-            float las_mid_ran = res_per_deg * (float)180.0;
-            float deg_15 = floor(res_per_deg * (float)15.0);
-            float* ran_arr = new float[4*int(floor(deg_15))]();
-
-            for (unsigned int i = int(floor(las_mid_ran))-2*int(floor(deg_15)); i < int(floor(las_mid_ran))+2*int(floor(deg_15)); i++) {
-              if(input_scan.ranges[i] < 0.5) {
-                signal++;
-              }
-              if (signal >= 30) {
-                signal = 30;
-              }
-              ran_arr[i-(int(floor(las_mid_ran))-2*int(floor(deg_15)))]=input_scan.ranges[i];
-            }
-
-            for (unsigned int i = 0; i < 4*int(floor(deg_15))-1; i++) {
-              if (ran_arr[i] >= 0.5) {
-                signal2++;
-              }
-            }
-            if (signal2 >= 4*int(floor(deg_15))-2) {
-              signal2 =0;
-              signal = 0;
-            }
-            else if (signal2 < 4*int(floor(deg_15))-1) signal2 = 0;
-
-            delete [] ran_arr;
-           }
-         }
-       }
-    
+    void dt_sub_cb(const freeway_msgs::DistanceTimeCalculator::ConstPtr& msg) {
+        dt_msg = *msg;
+    }
 
     void get_diagnostics_cb(const freeway_joyfw::stm_fw_msg &diag_msg) {
-      freeway_joyfw::stm_fw_msg stm_msg;
       geometry_msgs::Twist cmd_vel_msg;
-      actionlib_msgs::GoalID empty_goal;
       stm_msg = diag_msg;
-      if (stm_msg.am_status == true && stm_msg.e_stop_status == true)
+      diagnostics_time = ros::Time::now();
+      //if (stm_msg.am_status == true && stm_msg.e_stop_status == true)
+      if (stm_msg.e_stop_status == true)
       {
-        if(signal >= 30) {
+        if(front_obstacle_detected) {
           if (diag_msg.cmd_vel_mcu.linear.x > 0.0) {
               cmd_vel_msg.linear.x = 0.0;
           }
           else {
             cmd_vel_msg.linear.x =  diag_msg.cmd_vel_mcu.linear.x;
           }
-
           cmd_vel_msg.angular.z = diag_msg.cmd_vel_mcu.angular.z;
           cmd_pub.publish(cmd_vel_msg);
-          
         }
         else {
           cmd_vel_msg.linear.x = diag_msg.cmd_vel_mcu.linear.x;
@@ -137,20 +75,90 @@ class Freeway_Joy_Fw
       {
         cmd_vel_msg.linear.x = 0.0;//diag_msg.cmd_vel_mcu.linear.x;
         cmd_vel_msg.angular.z = 0.0;//diag_msg.cmd_vel_mcu.angular.z;
-        cmd_pub.publish(cmd_vel_msg);
-        move_base_flex_cancel_pub.publish(empty_goal);
+        cmd_emer_pub.publish(cmd_vel_msg);
+        if (dt_msg.status_info == 1) {
+            actionlib_msgs::GoalID empty_goal;
+            move_base_flex_cancel_pub.publish(empty_goal);
+        }
       }
     }
 
+  void fw_sonar_cb(const freeway_joyfw::stm_fw_sonar_msg::ConstPtr& fw_sonar_msg) {
+	ros::Time stamp_now;
+	stamp_now = ros::Time::now();
+	sensor_msgs::Range right_msg;
+	sensor_msgs::Range left_msg;
+	right_msg = (fw_sonar_msg->range_right);
+	left_msg = (fw_sonar_msg->range_left);
+
+        right_msg.header.frame_id = "sonar_link_right";
+	left_msg.header.frame_id = "sonar_link_left";
+
+	right_msg.header.stamp = stamp_now;
+	left_msg.header.stamp = stamp_now;
+
+	right_msg.max_range = 4.0;
+	left_msg.max_range = 4.0;
+
+	right_msg.range = right_msg.range / 100.0;
+	left_msg.range = left_msg.range / 100.0;
+
+	range_right_pub.publish(right_msg);
+	range_left_pub.publish(left_msg);
+}
+
+    void cmd_vel_ui_cb(const geometry_msgs::Twist &cmd_vel_ui_msg) {
+        geometry_msgs::Twist cmd_vel_msg;
+        ros::Duration timeout_duration(0.25);
+        bool active_flag = false;
+        if (ros::Time::now() - diagnostics_time < timeout_duration) active_flag = true;
+        else active_flag = false;
+
+        if (active_flag == false)
+        {
+            if(front_obstacle_detected) {
+            if (cmd_vel_ui_msg.linear.x > 0.0) {
+               cmd_vel_msg.linear.x = 0.0;
+            }
+            else {
+             cmd_vel_msg.linear.x =  cmd_vel_ui_msg.linear.x;
+            }
+
+            cmd_vel_msg.angular.z = cmd_vel_ui_msg.angular.z;
+            cmd_pub.publish(cmd_vel_msg);
+
+            }
+            else {
+            cmd_vel_msg.linear.x = cmd_vel_ui_msg.linear.x;
+            cmd_vel_msg.angular.z = cmd_vel_ui_msg.angular.z;
+            cmd_pub.publish(cmd_vel_msg);
+          }
+       }
+
+//       if (active_flag == true && stm_msg.e_stop_status == false)
+//       {
+//         cmd_vel_msg.linear.x = 0.0;//diag_msg.cmd_vel_mcu.linear.x;
+//         cmd_vel_msg.angular.z = 0.0;//diag_msg.cmd_vel_mcu.angular.z;
+//         cmd_emer_pub.publish(cmd_vel_msg);
+//       }
+     }
+
   private:
     ros::Publisher cmd_pub;
+    ros::Publisher cmd_emer_pub;
     ros::Publisher move_base_flex_cancel_pub;
     ros::Publisher am_mode_pub;
+    ros::Publisher range_right_pub;
+    ros::Publisher range_left_pub;
     ros::Subscriber diag_sub;
-    ros::Subscriber input_scan_sub;
-    uint32_t signal = 0;
-    uint32_t signal2 = 0;
-    uint32_t reset = 0;
+    ros::Subscriber front_obstacle_sub;
+    ros::Subscriber cmd_vel_ui_sub;
+    ros::Subscriber dt_sub;
+    ros::Subscriber sonar_sub;
+    freeway_joyfw::stm_fw_msg stm_msg;
+    freeway_msgs::DistanceTimeCalculator dt_msg;
+    ros::Time diagnostics_time;
+    bool front_obstacle_detected = false;
 };
 
 bool Freeway_Joy_Fw::am_mode_cb(freeway_joyfw::stm_fw_srv::Request &req, freeway_joyfw::stm_fw_srv::Response &res)

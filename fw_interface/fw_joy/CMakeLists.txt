@@ -9,6 +9,7 @@ project(freeway_joy)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   actionlib
+  sensor_msgs
   geometry_msgs
   message_generation
   move_base_msgs
@@ -17,6 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   tf2_geometry_msgs
   freeway_joyfw
+  freeway_msgs
 )
 
 ## System dependencies are found with CMake's conventions

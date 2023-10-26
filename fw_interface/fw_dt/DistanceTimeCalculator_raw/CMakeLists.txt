@@ -18,9 +18,9 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   tf2_geometry_msgs
   tf
-  freeway_msgs
   roslib
-  )
+  freeway_msgs
+)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -135,6 +135,7 @@ target_link_libraries(distancetime_calculator_node ${catkin_LIBRARIES})
 
 add_executable(distancetime_calculator_flex_node src/distance_calculator_oop_flex.cpp)
 target_link_libraries(distancetime_calculator_flex_node ${catkin_LIBRARIES})
+
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/distance_calculator_oop.cpp

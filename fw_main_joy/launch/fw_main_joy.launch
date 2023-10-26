@@ -1,0 +1,6 @@
+<launch>
+
+    <rosparam file="$(find fw_main_joy)/config/fw_main_joy_params.yaml" command="load"/>
+    <node name="fw_main_joy_node" pkg="fw_main_joy" type="fw_main_joy_node" output="screen" respawn="false"/>
+
+</launch>
